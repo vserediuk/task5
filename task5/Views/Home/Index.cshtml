@@ -1,0 +1,70 @@
+﻿@using task5.Services
+@model IndexModel
+@inject IUserService userService
+<div class="text-center">
+    @if (userService.IsAuthenticated(Context))
+    {
+        @section Scripts
+{
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
+}
+        <div class="container">
+            <form method="post" action="Home/Send">
+                 <div class="row">
+                     <div class="col-2">Receiver</div>
+                     <div class="col-4">@Html.DropDownList("username", Model.Users)</div>
+                 </div>
+                 <div class="row">
+                     <div class="col-2">Title</div>
+                     <div class="col-4"><input type="text" name="title" /></div>
+                 </div>
+                 <div class="row">
+                     <div class="col-2">Message</div>
+                     <div class="col-4"><input type="text" name="message" /></div>
+                 </div>
+                 <div class="row">
+                     <div class="col-6">
+                         <input class="btn btn-primary" type="submit" value="Send Message" />
+                     </div>
+                 </div>
+             </form>
+​
+     <div class="row">
+         <div class="col-6">
+             @foreach(var msg in userService.GetUserMessages(Context).OrderBy(msg => DateTime.Parse(msg.SentTime)))
+             {
+                     <div class="card">
+                         <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"onclick="help()"><h6>@msg.Title from @userService.GetUserName(msg.UserId)</h6></button>
+                         <div id="Text" style="display:none">
+                            @msg.Body
+                         </div>
+                     </div>
+             }
+             <ul id="messagesList"></ul>
+         </div>
+    </div>
+</div>
+    }
+    else
+    {
+        <form method="post" action="Home/Sign">
+            <h1>Enter your username</h1>
+            <input type="text" name="username"/><br/>
+            <input type="submit" class="btn btn-primary" value="Log in"/>
+        </form>
+    }
+</div>
+
+@Html.Hidden("sender", Context.User.Identity.Name)
+
+<script>
+    function help() {
+  var x = document.getElementById("Text");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
