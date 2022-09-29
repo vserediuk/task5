@@ -32,7 +32,7 @@ namespace task5.Data
         public IEnumerable<Message> GetUserMessages(string username)
         {
             var user = GetUserByName(username);
-            return _db.Messages.AsEnumerable();
+            return _db.Messages.Where(msg => msg.UserId == user.Id).AsEnumerable();
         }
     }
 }

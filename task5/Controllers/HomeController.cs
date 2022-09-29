@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using task5.Data.Models;
 using task5.Models;
 using task5.Services;
@@ -35,9 +36,9 @@ namespace task5.Controllers
 
 
         [HttpPost]
-        public IActionResult Send(string username, string message, string title, string sender)
+        public IActionResult Send(string username, string message, string title)
         {
-            _ = _hubContext.Clients.All.SendAsync("ReceiveMessage", sender+": " + message);
+            _hubContext.Clients.Group(username).SendAsync("ReceiveMessage", HttpContext.User.Identity.Name, message);
             _userService.SendMessage(username, message, title); 
             return RedirectToAction("Index");
         }
